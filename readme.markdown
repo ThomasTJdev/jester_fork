@@ -1,3 +1,39 @@
+# Fork info
+
+This is a fork of Jester with all merged commits and updated tag version which
+can be used in nimble packages. Hopefully this fork can be deleted, when the
+original package is updated with a new tag version. Until then this
+package is updated and maintained.
+
+## How to use the fork
+
+In your nimble file add the following line:
+
+```nim
+requires "https://github.com/ThomasTJdev/jester == 0.5.2"
+```
+
+## Warnings
+
+Since this includes all commits from the original repository, you have to be
+aware of a BREAKING CHANGE. This change auto-formats your URL-parameters
+with `decodeUrl()`. See issue: https://github.com/dom96/jester/issues/312
+
+To override this behaviour you can include the following compile flag or
+compile option. This will rollback the behaviour to the previous version.
+
+```nim
+# nimble file
+switch("d", "jesterUseRawParams") # Dont auto decode url params
+```
+or inline:
+```
+# command line
+nim -d:release -d:jesterUseRawParams yourfile.nim
+```
+
+_____
+
 # 🃏 Jester 🃏
 
 The sinatra-like web framework for Nim. Jester provides a DSL for quickly
