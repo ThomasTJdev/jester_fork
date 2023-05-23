@@ -36,7 +36,7 @@ proc parseUrlQuery*(query: string, result: var Table[string, string])
     inc(i) # Skip =
     i += query.parseUntil(val, '&', i)
     inc(i) # Skip &
-    result[decodeUrl(key)] = decodeUrl(val)
+    result[decodeUrl(key)] = val
 
 template parseContentDisposition(): typed =
   var hCount = 0
