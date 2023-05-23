@@ -700,7 +700,10 @@ template `@`*(s: string): untyped =
     # TODO: Why does request.params not work? :(
     # TODO: This is some weird bug with macros/templates, I couldn't
     # TODO: reproduce it easily.
-    decodeUrl(params(request)[s])
+    when defined(jesterUseRawParams):
+      params(request)[s]
+    else:
+      decodeUrl(params(request)[s])
   else:
     ""
 
