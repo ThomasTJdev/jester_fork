@@ -17,7 +17,8 @@ else:
 type
   Request* = object
     req: NativeRequest
-    patternParams: Option[Table[string, string]]
+    patternParamsRoute: Option[Table[string, string]]
+    patternParams: Option[Table[string, tuple[value: string, frozen: bool]]]
     reMatches: array[MaxSubpatterns, string]
     settings*: Settings
 
@@ -91,12 +92,18 @@ proc ip*(req: Request): string =
   if headers.hasKey("x-forwarded-for"):
     result = headers["x-forwarded-for"]
 
-proc params*(req: Request): Table[string, string] =
+proc params*(req: Request): Table[string, tuple[value: string, frozen: bool]] =
   ## Parameters from the pattern and the query string.
+  ##
+  ## If the param value is from the content type "application/x-www-form-urlencoded",
+  ## it is frozen. The `frozen:bool` is used within the `@` template to
+  ## indicate, that the value must not be decoded.
+  ## ==> https://github.com/dom96/jester/issues/312
+  ##
   if req.patternParams.isSome():
     result = req.patternParams.get()
   else:
-    result = initTable[string, string]()
+    result = initTable[string, tuple[value: string, frozen: bool]]()
 
   when useHttpBeast:
     let query = req.req.path.get("").parseUri().query
@@ -105,7 +112,7 @@ proc params*(req: Request): Table[string, string] =
 
   try:
     for key, val in cgi.decodeData(query):
-      result[key] = val
+      result[key] = ((value: val, frozen: false))
   except CgiError:
     logging.warn("Incorrect query. Got: $1" % [query])
 
@@ -192,7 +199,7 @@ proc getNativeReq*(req: Request): NativeRequest =
 
 #[ Only to be used by our route macro. ]#
 proc setPatternParams*(req: var Request, p: Table[string, string]) =
-  req.patternParams = some(p)
+  req.patternParamsRoute = some(p)
 
 proc setReMatches*(req: var Request, r: array[MaxSubpatterns, string]) =
   req.reMatches = r
