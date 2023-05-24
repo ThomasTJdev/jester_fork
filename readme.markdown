@@ -10,29 +10,15 @@ package is updated and maintained.
 In your nimble file add the following line:
 
 ```nim
-requires "https://github.com/ThomasTJdev/jester == 0.5.2"
+requires "https://github.com/ThomasTJdev/jester == 0.5.3"
 ```
 
 ## Warnings
 
-Since this includes all commits from the original repository, you have to be
-aware of a BREAKING CHANGE. This change auto-formats your URL-parameters
-with `decodeUrl()`. See issue: https://github.com/dom96/jester/issues/312
+Tag v0.5.3 includes the PR https://github.com/dom96/jester/pull/313 which fixes
+the bug with double decoding non-URL parameters.
 
-To override this behaviour you can include the following compile flag or
-compile option. This will rollback the behaviour to the previous version.
 
-```nim
-# nimble file
-switch("d", "jesterUseRawParams") # Dont auto decode url params
-```
-or inline:
-```
-# command line
-nim -d:release -d:jesterUseRawParams yourfile.nim
-```
-
-_____
 
 # 🃏 Jester 🃏
 
